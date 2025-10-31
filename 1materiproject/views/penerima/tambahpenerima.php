@@ -1,40 +1,76 @@
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">Quick Example</h3>
+<section class="content">
+  <div class="card card-warning">
+    <div class="card-header bg-primary text-white">
+      <h3 class="card-title">Tambah Data Penerima</h3>
     </div>
-    <!-- /.card-header -->
-    <!-- form start -->
-    <form>
-        <div class="card-body">
-            <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-            </div>
-            <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-            </div>
-            <div class="form-group">
-                <label for="exampleInputFile">File input</label>
-                <div class="input-group">
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="exampleInputFile">
-                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                    </div>
-                    <div class="input-group-append">
-                        <span class="input-group-text">Upload</span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">Check me out</label>
-            </div>
-        </div>
-        <!-- /.card-body -->
 
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary">Submit</button>
+    <form action="db/dbpenerima.php?proses=tambah" method="POST" enctype="multipart/form-data">
+      <div class="card-body">
+        <div class="form-group">
+          <label>NISP</label>
+          <input type="text" name="nisp" class="form-control" required>
         </div>
+
+        <div class="form-group">
+          <label>Nama Penerima</label>
+          <input type="text" name="nama_penerima" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status" class="form-control" required>
+            <option value="">-- Pilih Status --</option>
+            <option value="Yatim">Yatim</option>
+            <option value="Piatu">Piatu</option>
+            <option value="Yatim Piatu">Yatim Piatu</option>
+            <option value="Tidak">Tidak</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Kelas</label>
+          <input type="text" name="kelas" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Tanggal Lahir</label>
+          <input type="date" name="tanggal_lahir" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Alamat</label>
+          <textarea name="alamat" class="form-control" rows="2" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Pendapatan Orang Tua/Bulan</label>
+          <input type="number" name="pendapatanorangtua" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Foto</label>
+          <input type="file" name="foto" class="form-control" accept="image/*" onchange="previewImage(event)" required>
+          <br>
+          <img id="preview" style="max-width:120px; display:none; border:1px solid #ccc;">
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Simpan</button>
+        <a href="index.php?halaman=penerima" class="btn btn-secondary">Batal</a>
+      </div>
     </form>
-</div>
+  </div>
+</section>
+
+<script>
+  function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const preview = document.getElementById('preview');
+      preview.src = reader.result;
+      preview.style.display = 'block';
+    }
+    reader.readAsDataURL(event.target.files[0]);
+  }
+</script>

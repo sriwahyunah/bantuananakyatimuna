@@ -1,30 +1,18 @@
 <!-- Main content -->
-<section class="content">
-  <div class="error-page">
-    <h2 class="headline text-warning"> 404</h2>
-
-    <div class="error-content">
+<section class="content d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="error-page text-center">
+    <h2 class="headline text-warning" style="font-size: 100px;">404</h2>
+    <div class="error-content mt-4">
       <h3><i class="fas fa-exclamation-triangle text-warning"></i> Oops! Page not found.</h3>
-
-      <p>
-        We could not find the page you were looking for.
-        Meanwhile, you may <a href="../../index.html">return to dashboard</a> or try using the search form.
+      <p class="mt-3">
+        We couldn’t find the page you were looking for.<br>
+        Meanwhile, you may 
+        <a href="index.php" class="text-primary">return to dashboard</a>.
       </p>
-
-      <form class="search-form">
-        <div class="input-group">
-          <input type="text" name="search" class="form-control" placeholder="Search">
-
-          <div class="input-group-append">
-            <button type="submit" name="submit" class="btn btn-warning"><i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-        <!-- /.input-group -->
-      </form>
+      <a href="index.php" class="btn btn-warning mt-3">
+        <i class="fas fa-home"></i> Back to Home
+      </a>
     </div>
-    <!-- /.error-content -->
   </div>
-  <!-- /.error-page -->
 </section>
 <!-- /.content -->

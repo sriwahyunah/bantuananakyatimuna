@@ -55,7 +55,7 @@
                   <i class="far fa-circle nav-icon"></i>
                   <p>Tambah Admin</p>
                 </a>
-              </li>              
+              </li>
             </ul>
           </li>
 
@@ -120,7 +120,99 @@
               </li>
             </ul>
           </li>
-          
+
+          <!-- BAGIAN kategori -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Data kategori
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="index.php?halaman=kategori" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p> kategori</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?halaman=tambahkategori" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Tambah kategori</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?halaman=kategoribermasalah" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>kategori Bermasalah</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- BAGIAN transaksi -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Data transaksi
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="index.php?halaman=transaksi" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>index transaksi</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?halaman=tambahtransaksi" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Tambah transaksi</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?halaman=transaksibermasalah" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>transaksi Bermasalah</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <!-- BAGIAN pembayaran -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Data pembayaran
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="index.php?halaman=pembayaran" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p> pembayaran</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?halaman=tambahpembayaran" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Tambah pembayaran</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="index.php?halaman=pembayaranbermasalah" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>pembayaran Bermasalah</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

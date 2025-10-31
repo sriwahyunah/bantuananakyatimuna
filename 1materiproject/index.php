@@ -1,3 +1,14 @@
+<?php
+include 'koneksi.php'; // atau sesuaikan path
+
+$query = mysqli_query($koneksi, "SELECT * FROM admin");
+// while ($data = mysqli_fetch_assoc($query)) {
+//     echo $data['namaadmin'] . "<br>";
+// }
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,77 +38,140 @@
     </aside>
 
 
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active">Dashboard v2</li>
+              </ol>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+        <?php
 
 
-    <!-- Main content -->
-    <section class="content">
-      <?php
+        if (isset($_GET['halaman'])) {
+          switch ($_GET['halaman']) {
 
-      if (isset($_GET['halaman'])) {
-        switch ($_GET['halaman']) {
+            // bagian admin
+            case "admin";
+              include("views/admin/admin.php");
+              break;
+            case "tambahadmin";
+              include("views/admin/tambahadmin.php");
+              break;
+            case "editadmin";
+              include("views/admin/editadmin.php");
+              break;
 
-          // bagian admin
-          case "admin";
-            include("views/admin/admin.php");
-            break;
-          case "tambahadmin";
-            include("views/admin/tambahadmin.php");
-            break;
-          case "editadmin";
-            include("views/admin/editadmin.php");
-            break;
+            // bagian peminjam
+            case "penerima";
+              include("views/penerima/penerima.php");
+              break;
+            case "tambahpenerima";
+              include("views/penerima/tambahpenerima.php");
+              break;
+            case "editpenerima";
+              include("views/penerima/editpenerima.php");
+              break;
 
-          // bagian penerima
-          case "penerima";
-            include("views/penerima/penerima.php");
-            break;
-          case "tambahpenerima";
-            include("views/penerima/tambahpenerima.php");
-            break;
-          case "editpenerima";
-            include("views/penerima/editpenerima.php");
-            break;
+            // bagian bantuan
+            case "bantuan";
+              include("views/bantuan/bantuan.php");
+              break;
+            case "tambahbantuan";
+              include("views/bantuan/tambahbantuan.php");
+              break;
+            case "editbantuan";
+              include("views/bantuan/editbantuan.php");
+              break;
 
-          // bagian bantuan
-          case "bantuan";
-            include("views/bantuan/bantuan.php");
-            break;
-          case "tambahbantuan";
-            include("views/bantuan/tambahbantuan.php");
-            break;
-          case "editbantuan";
-            include("views/bantuan/editbantuan.php");
-            break;
+              // bagian kategori
+            case "kategori";
+              include("views/kategori/kategori.php");
+              break;
+            case "tambahkategori";
+              include("views/kategori/tambahkategori.php");
+              break;
+            case "editkategori";
+              include("views/kategori/editkategori.php");
+              break;
+
+              
+              // bagian transaksi
+            case "transaksi";
+              include("views/transaksi/transaksi.php");
+              break;
+            case "tambahtransaksi";
+              include("views/transaksi/tambahtransaksi.php");
+              break;
+            case "edittransaksi";
+              include("views/transaksi/edittransaksi.php");
+              break;
 
 
-          case "dashboard";
-            include("views/dashboard.php");
-            break;
-          case "home";
-            include("views/dashboard.php");
-            break;
-          case "default";
-            include("views/notfound.php");
+               // bagian pembayaran
+            case "pembayaran";
+              include("views/pembayaran/pembayaran.php");
+              break;
+            case "tambahpembayaran";
+              include("views/pembayaran/tambahpembayaran.php");
+              break;
+            case "editpembayaran";
+              include("views/pembayaran/editpembayaran.php");
+              break;
+
+            case "dashboard";
+              include("views/dashboard.php");
+              break;
+            case "home";
+              include("views/dashboard.php");
+              break;
+            case "default";
+              include("views/notfound.php");
+              break;
+
+            
+
+          }
+        } else {
+          include("views/notfound.php");
         }
-      } else {
-        include("views/notfound.php");
-      }
-      ?>
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
 
-  <!-- Main Footer -->
-  <footer class="main-footer">
-    <?php include 'pages/footer.php'; ?>
-  </footer>
+
+        ?>
+
+
+
+
+      </section>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+      <?php include 'pages/footer.php'; ?>
+    </footer>
   </div>
   <!-- ./wrapper -->
 
