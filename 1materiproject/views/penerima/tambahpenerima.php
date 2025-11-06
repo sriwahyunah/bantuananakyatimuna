@@ -1,76 +1,62 @@
+
+
 <section class="content">
-  <div class="card card-warning">
+  <div class="card card-primary">
     <div class="card-header bg-primary text-white">
-      <h3 class="card-title">Tambah Data Penerima</h3>
+      <h3 class="card-title">Tambah Data Penerima Bantuan</h3>
     </div>
 
-    <form action="db/dbpenerima.php?proses=tambah" method="POST" enctype="multipart/form-data">
-      <div class="card-body">
+    <div class="card-body">
+      <form action="../db/dbbantuan.php?proses=tambah" method="POST" enctype="multipart/form-data">
+        
         <div class="form-group">
-          <label>NISP</label>
-          <input type="text" name="nisp" class="form-control" required>
+          <label for="nisp">NISP</label>
+          <input type="text" name="nisp" id="nisp" class="form-control" required>
         </div>
 
         <div class="form-group">
-          <label>Nama Penerima</label>
-          <input type="text" name="nama_penerima" class="form-control" required>
+          <label for="nama_penerima">Nama Penerima</label>
+          <input type="text" name="nama_penerima" id="nama_penerima" class="form-control" required>
         </div>
 
         <div class="form-group">
-          <label>Status</label>
-          <select name="status" class="form-control" required>
+          <label for="status">Status</label>
+          <select name="status" id="status" class="form-control" required>
             <option value="">-- Pilih Status --</option>
             <option value="Yatim">Yatim</option>
             <option value="Piatu">Piatu</option>
             <option value="Yatim Piatu">Yatim Piatu</option>
-            <option value="Tidak">Tidak</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Kelas</label>
-          <input type="text" name="kelas" class="form-control" required>
+          <label for="kelas">Kelas</label>
+          <input type="text" name="kelas" id="kelas" class="form-control" required>
         </div>
 
         <div class="form-group">
-          <label>Tanggal Lahir</label>
-          <input type="date" name="tanggal_lahir" class="form-control" required>
+          <label for="tanggal_lahir">Tanggal Lahir</label>
+          <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control" required>
         </div>
 
         <div class="form-group">
-          <label>Alamat</label>
-          <textarea name="alamat" class="form-control" rows="2" required></textarea>
+          <label for="alamat">Alamat</label>
+          <textarea name="alamat" id="alamat" class="form-control" rows="3" required></textarea>
         </div>
 
         <div class="form-group">
-          <label>Pendapatan Orang Tua/Bulan</label>
-          <input type="number" name="pendapatanorangtua" class="form-control" required>
+          <label for="pendapatanorangtua">Pendapatan Orang Tua</label>
+          <input type="number" name="pendapatanorangtua" id="pendapatanorangtua" class="form-control" required>
         </div>
 
         <div class="form-group">
-          <label>Foto</label>
-          <input type="file" name="foto" class="form-control" accept="image/*" onchange="previewImage(event)" required>
-          <br>
-          <img id="preview" style="max-width:120px; display:none; border:1px solid #ccc;">
+          <label for="foto">Foto</label>
+          <input type="file" name="foto" id="foto" class="form-control-file">
         </div>
-      </div>
 
-      <div class="card-footer">
-        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Simpan</button>
-        <a href="index.php?halaman=penerima" class="btn btn-secondary">Batal</a>
-      </div>
-    </form>
+        <button type="submit" class="btn btn-success">Simpan</button>
+        <a href="../views/penerima/penerima.php" class="btn btn-secondary">Batal</a>
+      </form>
+    </div>
   </div>
 </section>
-
-<script>
-  function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = function () {
-      const preview = document.getElementById('preview');
-      preview.src = reader.result;
-      preview.style.display = 'block';
-    }
-    reader.readAsDataURL(event.target.files[0]);
-  }
-</script>

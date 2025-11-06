@@ -1,101 +1,106 @@
 <?php
-// Aktifkan error agar tidak blank
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 include "koneksi.php";
 
-// Cek apakah ada parameter id_transaksi
-if (!isset($_GET['id_transaksi'])) {
-    die("<div class='alert alert-danger'>ID Transaksi tidak ditemukan!</div>");
-}
-
 $id_transaksi = $_GET['id_transaksi'];
-$query = mysqli_query($koneksi, "SELECT * FROM transaksi WHERE id_transaksi='$id_transaksi'");
-$data = mysqli_fetch_assoc($query);
 
+// Query untuk ambil data transaksi dan relasi admin + penerima
+$sql = mysqli_query($koneksi, "
+    SELECT t.*, a.nama_admin, p.nama_penerima 
+    FROM transaksi t 
+    LEFT JOIN admin a ON t.id_admin = a.id_admin
+    LEFT JOIN penerima p ON t.id_penerima = p.id_penerima
+    WHERE t.id_transaksi='$id_transaksi'
+");
+
+$data = mysqli_fetch_assoc($sql);
 if (!$data) {
-    die("<div class='alert alert-danger'>Data transaksi dengan ID tersebut tidak ditemukan!</div>");
+    echo "<div class='alert alert-danger'>Data transaksi tidak ditemukan!</div>";
+    exit();
 }
+
+$foto_sekarang = !empty($data['fotobuktistruk']) ? '../../uploads/' . $data['fotobuktistruk'] : '../../dist/img/default-150x150.png';
 ?>
 
-<div class="card card-warning">
-    <div class="card-header bg-primary text-white">
-        <h3 class="card-title">Edit Transaksi</h3>
+<section class="content">
+  <div class="card">
+    <div class="card-header bg-gradient-warning">
+      <h3 class="card-title text-white">Edit Data Transaksi: <?php echo $data['id_transaksi']; ?></h3>
     </div>
 
-    <form action="db/dbtransaksi.php?proses=edit" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="id_transaksi" value="<?= $data['id_transaksi']; ?>">
+    <div class="card-body">
+      <form action="../../db/dbtransaksi.php?proses=edit" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id_transaksi" value="<?php echo $data['id_transaksi']; ?>">
 
-        <div class="card-body">
-            <!-- Tanggal Transaksi -->
-            <div class="form-group">
-                <label for="id_transaksi">id Transaksi</label>
-                <input type="date" name="id_transaksi" class="form-control"
-                    value="<?= $data['id_transaksi']; ?>" required>
-            </div>
+        <div class="form-group">
+          <label>Nama Admin</label>
+          <select name="id_admin" class="form-control" required>
+            <option value="<?php echo $data['id_admin']; ?>"><?php echo $data['nama_admin']; ?></option>
+            <?php
+            $qadmin = mysqli_query($koneksi, "SELECT * FROM admin");
+            while ($a = mysqli_fetch_assoc($qadmin)) {
+              echo "<option value='$a[id_admin]'>$a[nama_admin]</option>";
+            }
+            ?>
+          </select>
+        </div>
 
-            <!-- ID Admin -->
-            <div class="form-group">
-                <label for="id_admin">ID Admin</label>
-                <input type="number" name="id_admin" class="form-control"
-                    value="<?= $data['id_admin']; ?>" required>
-            </div>
+        <div class="form-group">
+          <label>Nama Penerima</label>
+          <select name="id_penerima" class="form-control" required>
+            <option value="<?php echo $data['id_penerima']; ?>"><?php echo $data['nama_penerima']; ?></option>
+            <?php
+            $qp = mysqli_query($koneksi, "SELECT * FROM penerima");
+            while ($p = mysqli_fetch_assoc($qp)) {
+              echo "<option value='$p[id_penerima]'>$p[nama_penerima]</option>";
+            }
+            ?>
+          </select>
+        </div>
 
-            <!-- ID Penerima -->
-            <div class="form-group">
-                <label for="id_penerima">ID Penerima</label>
-                <input type="number" name="id_penerima" class="form-control"
-                    value="<?= $data['id_penerima']; ?>" required>
-            </div>
+        <div class="form-group">
+          <label>Kelas</label>
+          <input type="text" class="form-control" name="kelas" value="<?php echo $data['kelas']; ?>" placeholder="Masukkan kelas penerima" required>
+        </div>
 
-            <!-- Kelas -->
-            <div class="form-group">
-                <label for="kelas">Kelas</label>
-                <input type="text" name="kelas" class="form-control"
-                    value="<?= isset($data['kelas']) ? $data['kelas'] : ''; ?>" placeholder="Contoh: SD/MI, SMP/MTs, SMA/SMK">
-            </div>
+        <div class="form-group">
+          <label>Status</label>
+          <input type="text" class="form-control" name="status" value="<?php echo $data['status']; ?>" placeholder="Masukkan status bantuan" required>
+        </div>
 
-            <!-- Status -->
-            <div class="form-group">
-                <label for="status">Status</label>
-                <select name="status" class="form-control" required>
-                    <option value="">-- Pilih Status --</option>
-                    <option value="Diproses" <?= ($data['status'] == 'Diproses') ? 'selected' : ''; ?>>Diproses</option>
-                    <option value="Selesai" <?= ($data['status'] == 'Selesai') ? 'selected' : ''; ?>>Selesai</option>
-                    <option value="Batal" <?= ($data['status'] == 'Batal') ? 'selected' : ''; ?>>Batal</option>
-                </select>
-            </div>
+        <div class="form-group">
+          <label>Tanggal Bantuan Keluar</label>
+          <input type="date" class="form-control" name="tanggal_bantuan_keluar" value="<?php echo $data['tanggal_bantuan_keluar']; ?>" required>
+        </div>
 
-            <!-- Tanggal Bantuan Keluar -->
-            <div class="form-group">
-                <label for="tanggal_bantuan_keluar">Tanggal Bantuan Keluar</label>
-                <input type="date" name="tanggal_bantuan_keluar" class="form-control"
-                    value="<?= isset($data['tanggal_bantuan_keluar']) ? $data['tanggal_bantuan_keluar'] : ''; ?>">
-            </div>
+        <div class="form-group">
+          <label>Tanggal Pengambilan Bantuan</label>
+          <input type="date" class="form-control" name="tanggal_pengambilan_bantuan" value="<?php echo $data['tanggal_pengambilan_bantuan']; ?>" required>
+        </div>
 
-            <!-- Tanggal Pengambilan Bantuan -->
-            <div class="form-group">
-                <label for="tanggal_pengambilan_bantuan">Tanggal Pengambilan Bantuan</label>
-                <input type="date" name="tanggal_pengambilan_bantuan" class="form-control"
-                    value="<?= isset($data['tanggal_pengambilan_bantuan']) ? $data['tanggal_pengambilan_bantuan'] : ''; ?>">
-            </div>
-
-            <!-- Foto Bukti Struk -->
-            <div class="form-group">
-                <label for="foto_bukti_struk">Foto Bukti Struk</label><br>
-                <?php if (!empty($data['foto_bukti_struk'])) { ?>
-                    <img src="uploads/<?= $data['foto_bukti_struk']; ?>" alt="Bukti Struk" width="120" class="mb-2 rounded">
-                    <br>
-                <?php } ?>
-                <input type="file" name="foto_bukti_struk" class="form-control-file">
-                <small class="text-muted">Kosongkan jika tidak ingin mengganti foto</small>
-            </div>
+        <div class="form-group">
+          <label>Foto Bukti Struk</label><br>
+          <small class="text-muted">Foto saat ini:</small><br>
+          <img src="<?php echo $foto_sekarang; ?>" alt="Foto Bukti" class="img-thumbnail mb-2" style="width: 100px;">
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="fotobuktistruk" name="fotobuktistruk" accept="image/*">
+            <label class="custom-file-label" for="fotobuktistruk">Pilih file baru</label>
+          </div>
+          <small class="text-muted">Format file: JPG, PNG. Foto lama akan diganti.</small>
         </div>
 
         <div class="card-footer">
-            <button type="submit" class="btn btn-warning">Update</button>
-            <a href="index.php?halaman=transaksi" class="btn btn-secondary">Batal</a>
+          <a href="../../index.php?halaman=transaksi" class="btn btn-secondary">Kembali</a>
+          <button type="submit" class="btn btn-warning float-right"><i class="fa fa-save"></i> Simpan Perubahan</button>
         </div>
-    </form>
-</div>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+document.getElementById('fotobuktistruk').addEventListener('change', function(e) {
+  var fileName = e.target.files[0].name;
+  e.target.nextElementSibling.innerText = fileName;
+});
+</script>

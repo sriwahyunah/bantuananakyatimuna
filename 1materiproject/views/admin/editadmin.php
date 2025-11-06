@@ -35,7 +35,7 @@ if (isset($_GET['pesan']) && $_GET['pesan'] == 'gagalupload') {
 
         <div class="card-body">
             <div class="card card-warning">
-                
+
                 <?php echo $pesan_error; ?>
 
                 <form action="db/dbadmin.php?proses=edit" method="POST" enctype="multipart/form-data">
@@ -45,33 +45,35 @@ if (isset($_GET['pesan']) && $_GET['pesan'] == 'gagalupload') {
 
                         <div class="form-group">
                             <label for="nama_admin">Nama Lengkap Admin</label>
-                            <input type="text" class="form-control" id="nama_admin" name="nama_admin" 
-                                placeholder="Masukkan nama lengkap" required 
+                            <input type="text" class="form-control" id="nama_admin" name="nama_admin"
+                                placeholder="Masukkan nama lengkap" required
                                 value="<?php echo htmlspecialchars($dataEdit['nama_admin']); ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="username">Username (Login)</label>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                placeholder="Masukkan username unik" required 
+                            <input type="text" class="form-control" id="username" name="username"
+                                placeholder="Masukkan username unik" required
                                 value="<?php echo htmlspecialchars($dataEdit['username']); ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="password">Ganti Password</label>
-                            <input type="password" class="form-control" id="password" name="password" 
+                            <input type="password" class="form-control" id="password" name="password"
                                 placeholder="Kosongkan jika tidak ingin mengubah password">
                             <small class="text-muted">Kosongkan kolom ini jika password tidak ingin diubah.</small>
                         </div>
 
                         <div class="form-group">
                             <label for="foto">Ubah Foto Admin</label>
-                            
+
                             <div class="mb-2">
                                 <small class="text-muted">Foto saat ini:</small>
                                 <img src="<?php echo $foto_sekarang; ?>" alt="Foto Admin" class="img-circle elevation-2" style="width: 50px; height: 50px;">
                             </div>
-                            
+
+                            <input type="hidden" name="fotoLama" value="<?php echo $dataEdit['foto']; ?>">
+
                             <div class="input-group">
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input" id="foto" name="foto" accept="image/*">
@@ -97,7 +99,7 @@ if (isset($_GET['pesan']) && $_GET['pesan'] == 'gagalupload') {
 </section>
 
 <script>
-    document.getElementById('foto').addEventListener('change', function (e) {
+    document.getElementById('foto').addEventListener('change', function(e) {
         var fileName = e.target.files[0].name;
         var nextSibling = e.target.nextElementSibling;
         nextSibling.innerText = fileName;

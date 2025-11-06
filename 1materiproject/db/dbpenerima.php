@@ -120,27 +120,20 @@ elseif ($proses == 'edit') {
 
 // ====================================================================
 // 🔴 PROSES HAPUS DATA
-// ====================================================================
 elseif ($proses == 'hapus') {
+    $id = $_GET['id_penerima'];
 
-    $id_penerima = isset($_GET['id_penerima']) ? intval($_GET['id_penerima']) : 0;
-
-    // Cek dan hapus foto lama
-    $cek = mysqli_query($koneksi, "SELECT foto FROM penerima WHERE id_penerima='$id_penerima'");
-    $data = mysqli_fetch_assoc($cek);
-
+    // Ambil foto lama
+    $data = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT foto FROM penerima WHERE id_penerima='$id'"));
     if (!empty($data['foto']) && file_exists("../uploads/" . $data['foto'])) {
         unlink("../uploads/" . $data['foto']);
     }
 
-    // Hapus relasi di tabel transaksi (jika ada)
-    mysqli_query($koneksi, "DELETE FROM transaksi WHERE id_penerima='$id_penerima'");
-
-    // Hapus data utama
-    $hapus = mysqli_query($koneksi, "DELETE FROM penerima WHERE id_penerima='$id_penerima'");
+    // Hapus data
+    $hapus = mysqli_query($koneksi, "DELETE FROM penerima WHERE id_penerima='$id'");
 
     if ($hapus) {
-        header("Location: ../views/penerima/penerima.php?pesan=berhasil_hapus");
+        header("Location: ../index.php?halaman=penerima&pesan=berhasil_hapus");
         exit();
     } else {
         echo "Gagal menghapus data: " . mysqli_error($koneksi);
@@ -157,5 +150,3 @@ else {
     echo "<div style='color:red; font-weight:bold;'>❌ Proses tidak dikenal.</div>";
     exit();
 }
-
-?>

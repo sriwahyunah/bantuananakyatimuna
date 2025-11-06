@@ -1,10 +1,15 @@
 <?php
 include "../koneksi.php";
+session_start();
 
-$proses = $_GET['proses'];
+$proses = isset($_GET['proses']) ? $_GET['proses'] : '';
 
-if ($proses == "tambah") {
-    $id_admin = $_POST['id_admin'];
+/* =====================================================
+   🟩 TAMBAH DATA TRANSAKSI
+===================================================== */
+if ($proses == 'tambah') {
+
+    $id_admin  = $_POST['id_admin'];
     $id_penerima = $_POST['id_penerima'];
     $kelas = $_POST['kelas'];
     $status = $_POST['status'];
@@ -12,42 +17,27 @@ if ($proses == "tambah") {
     $tanggal_pengambilan_bantuan = $_POST['tanggal_pengambilan_bantuan'];
 
     // Upload foto struk
-    $foto_bukti = $_FILES['foto_bukti']['name'];
-    $tmp = $_FILES['foto_bukti']['tmp_name'];
-
-    if ($foto_bukti != "") {
-        $path = "../uploads/" . $foto_bukti;
-        move_uploaded_file($tmp, $path);
-    } else {
-        $foto_bukti = "";
+    $fotobuktistruk = "";
+    if (!empty($_FILES['fotobuktistruk']['name'])) {
+        $foto_name = time() . "_" . $_FILES['fotobuktistruk']['name'];
+        $target = "../uploads/" . $foto_name;
+        move_uploaded_file($_FILES['fotobuktistruk']['tmp_name'], $target);
+        $fotobuktistruk = $foto_name;
     }
 
-    $query = mysqli_query($koneksi, "INSERT INTO transaksi (
-                id_admin, 
-                id_penerima, 
-                kelas, 
-                status, 
-                tanggal_bantuan_keluar, 
-                tanggal_pengambilan_bantuan, 
-                foto_bukti
-            ) VALUES (
-                '$id_admin', 
-                '$id_penerima', 
-                '$kelas', 
-                '$status', 
-                '$tanggal_bantuan_keluar', 
-                '$tanggal_pengambilan_bantuan', 
-                '$foto_bukti'
-            )");
+    $query = "INSERT INTO transaksi (id_admin, id_penerima, kelas, status, tanggal_bantuan_keluar, tanggal_pengambilan_bantuan, fotobuktistruk)
+              VALUES ('$id_admin', '$id_penerima', '$kelas', '$status', '$tanggal_bantuan_keluar', '$tanggal_pengambilan_bantuan', '$fotobuktistruk')";
+    mysqli_query($koneksi, $query);
 
-    if ($query) {
-        echo "<script>alert('Transaksi berhasil ditambahkan');window.location='../index.php?halaman=transaksi';</script>";
-    } else {
-        echo "<script>alert('Gagal menambah transaksi!');window.history.back();</script>";
-    }
+    echo "<script>alert('Data transaksi berhasil ditambahkan');window.location='../views/transaksi/transaksi.php';</script>";
 }
 
-elseif ($proses == "edit") {
+
+
+
+$proses = isset($_GET['proses']) ? $_GET['proses'] : '';
+
+if ($proses == 'edit') {
     $id_transaksi = $_POST['id_transaksi'];
     $id_admin = $_POST['id_admin'];
     $id_penerima = $_POST['id_penerima'];
@@ -56,53 +46,39 @@ elseif ($proses == "edit") {
     $tanggal_bantuan_keluar = $_POST['tanggal_bantuan_keluar'];
     $tanggal_pengambilan_bantuan = $_POST['tanggal_pengambilan_bantuan'];
 
-    // Ambil data lama
-    $qLama = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM transaksi WHERE id_transaksi='$id_transaksi'"));
-    $fotoLama = $qLama['foto_bukti'];
+    $data_lama = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT fotobuktistruk FROM transaksi WHERE id_transaksi='$id_transaksi'"));
+    $fotobuktistruk_lama = $data_lama['fotobuktistruk'];
 
-    // Cek jika ada file baru diupload
-    $foto_bukti = $_FILES['foto_bukti']['name'];
-    $tmp = $_FILES['foto_bukti']['tmp_name'];
+    if (!empty($_FILES['fotobuktistruk']['name'])) {
+        $foto_name = time() . "_" . basename($_FILES['fotobuktistruk']['name']);
+        $target_dir = "../uploads/";
+        $target_file = $target_dir . $foto_name;
 
-    if ($foto_bukti != "") {
-        $path = "../uploads/" . $foto_bukti;
-        move_uploaded_file($tmp, $path);
+        if (move_uploaded_file($_FILES['fotobuktistruk']['tmp_name'], $target_file)) {
+            if (!empty($fotobuktistruk_lama) && file_exists($target_dir . $fotobuktistruk_lama)) {
+                unlink($target_dir . $fotobuktistruk_lama);
+            }
+            $fotobuktistruk = $foto_name;
+        } else {
+            $fotobuktistruk = $fotobuktistruk_lama;
+        }
     } else {
-        $foto_bukti = $fotoLama; // tetap pakai yang lama
+        $fotobuktistruk = $fotobuktistruk_lama;
     }
 
-    $query = mysqli_query($koneksi, "UPDATE transaksi SET 
+    $query = "UPDATE transaksi SET 
                 id_admin='$id_admin',
                 id_penerima='$id_penerima',
                 kelas='$kelas',
                 status='$status',
                 tanggal_bantuan_keluar='$tanggal_bantuan_keluar',
                 tanggal_pengambilan_bantuan='$tanggal_pengambilan_bantuan',
-                foto_bukti='$foto_bukti'
-                WHERE id_transaksi='$id_transaksi'");
+                fotobuktistruk='$fotobuktistruk'
+              WHERE id_transaksi='$id_transaksi'";
 
-    if ($query) {
-        echo "<script>alert('Transaksi berhasil diedit');window.location='../index.php?halaman=transaksi';</script>";
+    if (mysqli_query($koneksi, $query)) {
+        echo "<script>alert('✅ Data transaksi berhasil diperbarui!');window.location='../index.php?halaman=transaksi';</script>";
     } else {
-        echo "<script>alert('Gagal mengedit transaksi!');window.history.back();</script>";
+        echo "<script>alert('❌ Gagal memperbarui data transaksi!');window.history.back();</script>";
     }
 }
-
-elseif ($proses == "hapus") {
-    $id = $_GET['id_transaksi'];
-
-    // Hapus foto juga dari folder
-    $data = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT foto_bukti FROM transaksi WHERE id_transaksi='$id'"));
-    if (!empty($data['foto_bukti']) && file_exists("../uploads/" . $data['foto_bukti'])) {
-        unlink("../uploads/" . $data['foto_bukti']);
-    }
-
-    $query = mysqli_query($koneksi, "DELETE FROM transaksi WHERE id_transaksi='$id'");
-
-    if ($query) {
-        echo "<script>alert('Transaksi berhasil dihapus');window.location='../index.php?halaman=transaksi';</script>";
-    } else {
-        echo "<script>alert('Gagal menghapus transaksi!');window.history.back();</script>";
-    }
-}
-?>
