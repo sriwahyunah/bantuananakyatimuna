@@ -1,90 +1,81 @@
-<?php
-// Contoh: Jika koneksi.php ada di folder ROOT dan penerima.php ada di views/penerima/
-include "koneksi.php"; 
-// Jika ini masih error, coba cek lagi lokasi koneksi.php Anda.
-
-// --- 1. Query Data ---
-// Pastikan $koneksi terdefinisi dari include di atas
-$query = mysqli_query($koneksi, "SELECT * FROM penerima");
-
-// --- 2. Cek pesan setelah proses edit/tambah/hapus ---
-$pesan_notifikasi = '';
-if (isset($_GET['pesan'])) {
-    if ($_GET['pesan'] == 'berhasil_edit') {
-        $pesan_notifikasi = '<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil diupdate!</div>';
-    } elseif ($_GET['pesan'] == 'berhasil_tambah') {
-        $pesan_notifikasi = '<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil ditambahkan!</div>';
-    } elseif ($_GET['pesan'] == 'berhasil_hapus') {
-        $pesan_notifikasi = '<div class="alert alert-info alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil dihapus!</div>';
-    }
-}
+<?php 
+include 'koneksi.php';
 ?>
+<!-- Main content -->
+<section class="content">
 
-<div class="card card-solid">
-    <div class="card-header">
-        <div class="col-sm-12">
-            <a href="index.php?halaman=tambahpenerima" class="btn btn-primary float-right btn-sm">
-                <i class="fas fa-user-plus"></i> Tambah Penerima
-            </a>
+    <div class="card">
+        <div class="card-header bg-gradient-primary mb-3">
+            <div class="row">
+                <div class="col tekstebal">
+                    <strong>
+                        <h5>Halaman Data Penerima</h5>
+                    </strong>
+                </div>
+                <div class="col text-right">
+                    <a href="index.php?halaman=tambahpenerima" class="btn btn-light btn-sm">
+                        <i class="fas fa-user-plus"></i> Tambah Penerima
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <div class="col-12 mt-2">
-        <?php echo $pesan_notifikasi; ?>
-    </div>
 
-    <div class="card-body pb-0">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped text-center">
-                <thead>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped text-sm">
+                <thead class="bg-light">
                     <tr>
                         <th>No</th>
                         <th>NISP</th>
-                        <th>Nama Penerima</th>
+                        <th>Nama</th>
                         <th>Kelas</th>
-                        <th>Tanggal Lahir</th>
+                        <th>Tgl Lahir</th>
                         <th>Alamat</th>
+                        <th>Status</th>
+                        <th>Pendapatan Ortu</th>
                         <th>Foto</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
+                    // Pastikan $koneksi sudah tersedia dari index.php
                     $no = 1;
-                    // PERHATIAN: Memastikan $query tidak NULL sebelum di loop
-                    if ($query && mysqli_num_rows($query) > 0) {
-                        while ($data = mysqli_fetch_assoc($query)) {
-                        ?>
-                            <tr>
-                                <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($data['nisp']); ?></td>
-                                <td><?= htmlspecialchars($data['nama_penerima']); ?></td>
-                                <td><?= htmlspecialchars($data['kelas']); ?></td> 
-                                <td><?= htmlspecialchars($data['tanggal_lahir']); ?></td>
-                                <td><?= htmlspecialchars($data['alamat']); ?></td>
-                                <td>
-                                    <?php 
-                                    // PERBAIKAN: Menggunakan path yang benar untuk foto
-                                    if (!empty($data['foto'])) { ?>
-                                        <img src="uploads/<?php echo htmlspecialchars($data['foto']); ?>" width="60" height="60" style="object-fit:cover; border-radius:8px;">
-                                    <?php } else { ?>
-                                        <span class="text-muted">Tidak ada foto</span>
-                                    <?php } ?>
-                                </td>
-                                <td>
-                                    <a href="index.php?halaman=editpenerima&id_penerima=<?= $data['id_penerima']; ?>" class="btn btn-warning btn-sm">Edit</a>
-                                    <a href="db/dbpenerima.php?proses=hapus&id_penerima=<?= $data['id_penerima']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin hapus data ini?')">Hapus</a>
-                                </td>
-                            </tr>
-                        <?php 
+                    $sql = mysqli_query($koneksi, "SELECT * FROM penerima ORDER BY id_penerima DESC");
+                    while ($data = mysqli_fetch_assoc($sql)) {
+                        echo "<tr>";
+                        echo "<td>{$no}</td>";
+                        echo "<td>" . htmlspecialchars($data['nisp']) . "</td>";
+                        echo "<td>" . htmlspecialchars($data['nama_penerima']) . "</td>";
+                        echo "<td>" . htmlspecialchars($data['kelas']) . "</td>";
+                        echo "<td>" . htmlspecialchars($data['tanggal_lahir']) . "</td>";
+                        echo "<td>" . htmlspecialchars($data['alamat']) . "</td>";
+                        echo "<td>" . (!empty($data['status']) ? htmlspecialchars($data['status']) : "<span class='text-muted'>-</span>") . "</td>";
+                        echo "<td>" . (!is_null($data['pendapatan_orang_tua']) ? 'Rp ' . number_format($data['pendapatan_orang_tua'], 0, ',', '.') : "<span class='text-muted'>-</span>") . "</td>";
+
+                        // Ubah path direktori foto ke folder baru
+                        echo "<td>";
+                        if (!empty($data['foto']) && file_exists("views/penerima/fotopenerima/" . $data['foto'])) {
+                            echo "<img src='views/penerima/fotopenerima/" . htmlspecialchars($data['foto']) . "' width='60' height='60' style='object-fit:cover;border-radius:8px;'>";
+                        } else {
+                            echo "<span class='text-muted'>Tidak ada</span>";
                         }
-                    } else {
-                        // Tampilkan pesan jika data kosong atau query gagal (setelah perbaikan koneksi)
-                        echo '<tr><td colspan="8" class="text-center">Tidak ada data penerima tersedia.</td></tr>';
+                        echo "</td>";
+
+                        echo "<td>
+          <a href='index.php?halaman=editpenerima&id_penerima={$data['id_penerima']}' class='btn btn-sm btn-success' title='Edit'><i class='fa fa-pencil-alt'></i></a>
+          <a href='db/dbpenerima.php?proses=hapus&id_penerima={$data['id_penerima']}' class='btn btn-sm btn-danger' title='Hapus' onclick=\"return confirm('Yakin ingin menghapus data ini?')\"><i class='fa fa-trash'></i></a>
+        </td>";
+                        echo "</tr>";
+                        $no++;
                     }
                     ?>
                 </tbody>
+
             </table>
         </div>
+
+        <div class="card-footer">
+            <small>Data Penerima - Aplikasi Bantuan Anak Yatim UNA</small>
+        </div>
     </div>
-</div>
+</section>

@@ -1,8 +1,7 @@
-
 <?php
 $koneksi = mysqli_connect("localhost", "root", "", "bantuananakyatimuna");
 
-if (mysqli_connect_errno()) {
-    echo "Koneksi database gagal: " . mysqli_connect_error();
+if (!$koneksi) {
+    die("Koneksi gagal: " . mysqli_connect_error());
 }
 ?>

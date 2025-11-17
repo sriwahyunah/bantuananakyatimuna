@@ -1,203 +1,97 @@
 <?php
-include 'koneksi.php'; // atau sesuaikan path
+session_start();
 
-$query = mysqli_query($koneksi, "SELECT * FROM admin");
-// while ($data = mysqli_fetch_assoc($query)) {
-//     echo $data['namaadmin'] . "<br>";
-// }
+// Jika belum login sebagai admin, arahkan ke login
+if (!isset($_SESSION['admin'])) {
+    header("Location: landing.php");
+    exit;
+}
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <?php include 'pages/header.php'; ?>
+    <?php include 'pages/header.php'; ?>
 </head>
-
 
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed sidebar-collapse">
 
-  <div class="wrapper">
+<div class="wrapper">
 
     <!-- Preloader -->
     <div class="preloader flex-column justify-content-center align-items-center">
-      <img class="animation__wobble" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+        <img class="animation__wobble" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
     </div>
 
-    <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-dark">
-      <?php include 'pages/navbar.php'; ?>
+    <!-- NAVBAR -->
+    <nav class="main-header navbar navbar-expand navbar-dark bg-dark">
+        <?php include 'pages/navbar.php'; ?>
     </nav>
-    <!-- /.navbar -->
 
-    <!-- Main Sidebar Container -->
+    <!-- SIDEBAR -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-      <?php include 'pages/sidebar.php'; ?>
+        <?php include 'pages/sidebar.php'; ?>
     </aside>
 
-
-    <!-- Content Wrapper. Contains page content -->
+    <!-- CONTENT WRAPPER -->
     <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
-      <div class="content-header">
-        <div class="container-fluid">
-          <div class="row mb-2">
-            <div class="col-sm-6">
-            </div><!-- /.col -->
-            <div class="col-sm-6">
-              <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active">Dashboard v2</li>
-              </ol>
-            </div><!-- /.col -->
-          </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
-      </div>
-      <!-- /.content-header -->
+        <section class="content p-3">
 
-      <!-- Main content -->
-      <section class="content">
-        <?php
+            <?php
+            $halaman = $_GET['halaman'] ?? 'landingafterlogin';
 
+            $routes = [
+                'admin' => 'views/admin/admin.php',
+                'tambahadmin' => 'views/admin/tambahadmin.php',
+                'editadmin' => 'views/admin/editadmin.php',
 
-        if (isset($_GET['halaman'])) {
-          switch ($_GET['halaman']) {
+                'penerima' => 'views/penerima/penerima.php',
+                'tambahpenerima' => 'views/penerima/tambahpenerima.php',
+                'editpenerima' => 'views/penerima/editpenerima.php',
 
-            // bagian admin
-            case "admin";
-              include("views/admin/admin.php");
-              break;
-            case "tambahadmin";
-              include("views/admin/tambahadmin.php");
-              break;
-            case "editadmin";
-              include("views/admin/editadmin.php");
-              break;
+                'bantuan' => 'views/bantuan/bantuan.php',
+                'tambahbantuan' => 'views/bantuan/tambahbantuan.php',
+                'editbantuan' => 'views/bantuan/editbantuan.php',
 
-            // bagian peminjam
-            case "penerima";
-              include("views/penerima/penerima.php");
-              break;
-            case "tambahpenerima";
-              include("views/penerima/tambahpenerima.php");
-              break;
-            case "editpenerima";
-              include("views/penerima/editpenerima.php");
-              break;
+                'transaksi' => 'views/transaksi/transaksi.php',
+                'tambahtransaksi' => 'views/transaksi/tambahtransaksi.php',
+                'edittransaksi' => 'views/transaksi/edittransaksi.php',
 
-            // bagian bantuan
-            case "bantuan";
-              include("views/bantuan/bantuan.php");
-              break;
-            case "tambahbantuan";
-              include("views/bantuan/tambahbantuan.php");
-              break;
-            case "editbantuan";
-              include("views/bantuan/editbantuan.php");
-              break;
+                'profile' => 'views/profile.php',
 
-              // bagian kategori
-            case "kategori";
-              include("views/kategori/kategori.php");
-              break;
-            case "tambahkategori";
-              include("views/kategori/tambahkategori.php");
-              break;
-            case "editkategori";
-              include("views/kategori/editkategori.php");
-              break;
+                'dashboard' => 'views/dashboard.php',
+                'home' => 'views/dashboard.php',
 
-              
-              // bagian transaksi
-            case "transaksi";
-              include("views/transaksi/transaksi.php");
-              break;
-            case "tambahtransaksi";
-              include("views/transaksi/tambahtransaksi.php");
-              break;
-            case "edittransaksi";
-              include("views/transaksi/edittransaksi.php");
-              break;
+                'landingafterlogin' => 'views/landingafterlogin.php'
+            ];
 
+            if (array_key_exists($halaman, $routes) && file_exists($routes[$halaman])) {
+                include $routes[$halaman];
+            } else {
+                include 'views/dashboard.php';
+            }
+            ?>
 
-               // bagian pembayaran
-            case "pembayaran";
-              include("views/pembayaran/pembayaran.php");
-              break;
-            case "tambahpembayaran";
-              include("views/pembayaran/tambahpembayaran.php");
-              break;
-            case "editpembayaran";
-              include("views/pembayaran/editpembayaran.php");
-              break;
-
-            case "dashboard";
-              include("views/dashboard.php");
-              break;
-            case "home";
-              include("views/dashboard.php");
-              break;
-            case "default";
-              include("views/notfound.php");
-              break;
-
-            
-
-          }
-        } else {
-          include("views/notfound.php");
-        }
-
-
-
-        ?>
-
-
-
-
-      </section>
-      <!-- /.content -->
+        </section>
     </div>
-    <!-- /.content-wrapper -->
 
-    <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
-      <!-- Control sidebar content goes here -->
-    </aside>
-    <!-- /.control-sidebar -->
-
-    <!-- Main Footer -->
-    <footer class="main-footer">
-      <?php include 'pages/footer.php'; ?>
+    <!-- FOOTER -->
+    <footer class="main-footer text-center">
+        <?php include 'pages/footer.php'; ?>
     </footer>
-  </div>
-  <!-- ./wrapper -->
 
-  <!-- REQUIRED SCRIPTS -->
-  <!-- jQuery -->
-  <script src="plugins/jquery/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <!-- overlayScrollbars -->
-  <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-  <!-- AdminLTE App -->
-  <script src="dist/js/adminlte.js"></script>
+</div>
 
-  <!-- PAGE PLUGINS -->
-  <!-- jQuery Mapael -->
-  <script src="plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
-  <script src="plugins/raphael/raphael.min.js"></script>
-  <script src="plugins/jquery-mapael/jquery.mapael.min.js"></script>
-  <script src="plugins/jquery-mapael/maps/usa_states.min.js"></script>
-  <!-- ChartJS -->
-  <script src="plugins/chart.js/Chart.min.js"></script>
+<!-- SCRIPTS -->
+<script src="plugins/jquery/jquery.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="dist/js/adminlte.js"></script>
+<script src="plugins/chart.js/Chart.min.js"></script>
 
-  <!-- AdminLTE for demo purposes -->
-  <script src="dist/js/demo.js"></script>
-  <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-  <script src="dist/js/pages/dashboard2.js"></script>
 </body>
-
 </html>

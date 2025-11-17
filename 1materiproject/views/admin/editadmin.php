@@ -1,107 +1,91 @@
 <?php
-// views/admin/editadmin.php
-
-include "koneksi.php"; // Pastikan koneksi.php sudah di-include
-$id_admin = $_GET['id_admin'];
-
-// Query untuk mengambil data admin yang akan diedit
-$sqlEdit = mysqli_query($koneksi, "SELECT * FROM admin WHERE id_admin='$id_admin'");
-$dataEdit = mysqli_fetch_array($sqlEdit);
-
-// Memastikan data ditemukan
-if (!$dataEdit) {
-    echo "<div class='alert alert-danger'>Data Admin tidak ditemukan!</div>";
-    exit();
+// Validasi parameter id_admin
+if (!isset($_GET['id_admin'])) {
+    die("Error: ID admin tidak ditemukan di URL.");
 }
 
-// Menentukan path foto yang ada
-$foto_sekarang = !empty($dataEdit['foto']) ? 'foto/' . $dataEdit['foto'] : 'dist/img/user2-160x160.jpg';
+$id_admin = intval($_GET['id_admin']);
 
-// Pesan notifikasi error
-$pesan_error = '';
-if (isset($_GET['pesan']) && $_GET['pesan'] == 'gagalupload') {
-    $pesan_error = "<div class='alert alert-danger'>Gagal upload foto. Silakan coba lagi.</div>";
-} elseif (isset($_GET['pesan']) && $_GET['pesan'] == 'gagal') {
-    $pesan_error = "<div class='alert alert-danger'>Gagal memperbarui data: " . htmlspecialchars($_GET['error'] ?? 'Terjadi kesalahan database.') . "</div>";
+// Query admin berdasarkan ID
+$sql = mysqli_query($koneksi, "SELECT * FROM admin WHERE id_admin='$id_admin'");
+
+// Cek apakah data ditemukan
+if (!$sql || mysqli_num_rows($sql) == 0) {
+    die("Error: Data admin tidak ditemukan.");
 }
+
+$data = mysqli_fetch_assoc($sql);
 ?>
 
-<section class="content">
 
-    <div class="card text-sm">
-        <div class="card-header bg-gradient-warning">
-            <h2 class="card-title text-white">Edit Data Admin: <?php echo $dataEdit['nama_admin']; ?></h2>
-        </div>
+<div class="card card-warning">
+    <div class="card-header">
+        <h3 class="card-title">Edit Admin</h3>
+    </div>
+
+
+    <form action="db/dbadmin.php?proses=edit" method="POST" enctype="multipart/form-data">
+
+        <input type="hidden" name="id_admin" value="<?= $data['id_admin'] ?>">
 
         <div class="card-body">
-            <div class="card card-warning">
+            <div class="form-group">
+                <label for="nama_admin">Nama Admin</label>
+                <input type="text" class="form-control" id="nama_admin" name="nama_admin" value="<?= htmlspecialchars($data['nama_admin']) ?>" required>
+            </div>
 
-                <?php echo $pesan_error; ?>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="<?= htmlspecialchars($data['username']) ?>" required>
+            </div>
 
-                <form action="db/dbadmin.php?proses=edit" method="POST" enctype="multipart/form-data">
-                    <div class="card-body-sm ml-2">
+            <div class="form-group">
+                <label for="password">Password <small class="text-muted">(kosongkan jika tidak ingin diubah)</small></label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password baru">
+            </div>
 
-                        <input type="hidden" name="id_admin" value="<?php echo $dataEdit['id_admin']; ?>">
-
-                        <div class="form-group">
-                            <label for="nama_admin">Nama Lengkap Admin</label>
-                            <input type="text" class="form-control" id="nama_admin" name="nama_admin"
-                                placeholder="Masukkan nama lengkap" required
-                                value="<?php echo htmlspecialchars($dataEdit['nama_admin']); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="username">Username (Login)</label>
-                            <input type="text" class="form-control" id="username" name="username"
-                                placeholder="Masukkan username unik" required
-                                value="<?php echo htmlspecialchars($dataEdit['username']); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Ganti Password</label>
-                            <input type="password" class="form-control" id="password" name="password"
-                                placeholder="Kosongkan jika tidak ingin mengubah password">
-                            <small class="text-muted">Kosongkan kolom ini jika password tidak ingin diubah.</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="foto">Ubah Foto Admin</label>
-
-                            <div class="mb-2">
-                                <small class="text-muted">Foto saat ini:</small>
-                                <img src="<?php echo $foto_sekarang; ?>" alt="Foto Admin" class="img-circle elevation-2" style="width: 50px; height: 50px;">
-                            </div>
-
-                            <input type="hidden" name="fotoLama" value="<?php echo $dataEdit['foto']; ?>">
-
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="foto" name="foto" accept="image/*">
-                                    <label class="custom-file-label" for="foto">Pilih file foto baru</label>
-                                </div>
-                            </div>
-                            <small class="text-muted">Format: JPG, PNG. Foto lama akan diganti.</small>
-                        </div>
-
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-warning float-right ml-3"><i class="fa fa-edit"></i> Update Data</button>
-                            <a href="index.php?halaman=admin" class="btn btn-secondary float-right"> Batal</a>
-                        </div>
-
+            <div class="form-group">
+                <label for="foto">Foto Admin</label>
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="foto" name="foto" accept="image/*">
+                        <label class="custom-file-label" for="foto">Pilih file</label>
                     </div>
-                </form>
+                    <div class="input-group-append">
+                        <span class="input-group-text">Upload</span>
+                    </div>
+                </div>
+
+                <?php if (!empty($data['foto'])): ?>
+                    <img src="views/admin/fotoadmin/<?= htmlspecialchars($data['foto']) ?>" id="previewFoto" style="max-width:150px;margin-top:10px;">
+                <?php endif; ?>
+                <small class="form-text text-muted">Format JPG/PNG, max 2MB</small>
             </div>
         </div>
-        <div class="card-footer text-sm text-muted">
-            Formulir untuk memperbarui data administrator sistem.
+
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            <a href="index.php?halaman=admin" class="btn btn-secondary">Batal</a>
         </div>
-    </div>
-</section>
+    </form>
+</div>
 
 <script>
     document.getElementById('foto').addEventListener('change', function(e) {
-        var fileName = e.target.files[0].name;
-        var nextSibling = e.target.nextElementSibling;
-        nextSibling.innerText = fileName;
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            let img = document.getElementById('previewFoto');
+            if (!img) {
+                img = document.createElement('img');
+                img.id = 'previewFoto';
+                img.style.maxWidth = '150px';
+                img.style.marginTop = '10px';
+                e.target.insertAdjacentElement('afterend', img);
+            }
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
     });
 </script>

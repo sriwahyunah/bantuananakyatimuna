@@ -1,57 +1,93 @@
 <?php
-include "koneksi.php";
-$no = 1;
-$query = mysqli_query($koneksi, "SELECT * FROM transaksi 
-    JOIN admin ON transaksi.id_admin = admin.id_admin
-    JOIN penerima ON transaksi.id_penerima = penerima.id_penerima
-    ORDER BY transaksi.id_transaksi DESC");
+include 'koneksi.php';
+?>
+
+<?php
+// views/transaksi/daftartransaksi.php
+// Halaman daftar transaksi
+
+// Pastikan koneksi ($koneksi) sudah tersedia sebelum menjalankan query ini.
+$query = mysqli_query($koneksi, "
+    SELECT t.*, p.nama_penerima, b.nama_bantuan, b.nominal, a.nama_admin 
+    FROM transaksi t 
+    JOIN penerima p ON t.id_penerima=p.id_penerima 
+    JOIN bantuan b ON t.id_bantuan=b.id_bantuan 
+    JOIN admin a ON t.id_admin=a.id_admin 
+    ORDER BY t.id_transaksi DESC
+");
 ?>
 
 <div class="card">
-  <div class="card-header bg-primary text-white">
-    <h3 class="card-title">Data Transaksi</h3>
-  </div>
-  <div class="card-body">
-    <a href="views/transaksi/tambahtransaksi.php" class="btn btn-success mb-3">+ Tambah Transaksi</a>
+    <div class="card-header">
+        <h3 class="card-title">Daftar Transaksi</h3>
+        <div class="card-tools">
+            <a href="index.php?halaman=tambahtransaksi" class="btn btn-light btn-sm float-right">+ Tambah Transaksi</a>
+        </div>
+    </div>
 
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr class="text-center">
-          <th>No</th>
-          <th>Admin</th>
-          <th>Penerima</th>
-          <th>Kelas</th>
-          <th>Status</th>
-          <th>Tanggal Bantuan Keluar</th>
-          <th>Tanggal Pengambilan Bantuan</th>
-          <th>Foto Bukti Struk</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($data = mysqli_fetch_assoc($query)) { ?>
-          <tr>
-            <td class="text-center"><?= $no++ ?></td>
-            <td><?= $data['nama_admin'] ?></td>
-            <td><?= $data['nama_penerima'] ?></td>
-            <td><?= $data['kelas'] ?></td>
-            <td><?= $data['status'] ?></td>
-            <td><?= $data['tanggal_bantuan_keluar'] ?></td>
-            <td><?= $data['tanggal_pengambilan_bantuan'] ?></td>
-            <td class="text-center">
-              <?php if ($data['fotobuktistruk'] != '') { ?>
-                <img src="../../uploads/<?= $data['fotobuktistruk'] ?>" width="80">
-              <?php } else { ?>
-                <span class="text-muted">Tidak ada</span>
-              <?php } ?>
-            </td>
-            <td class="text-center">
-              <a href="views/transaksi/edittransaksi.php?id_transaksi=<?= $data['id_transaksi'] ?>" class="btn btn-warning btn-sm">Edit</a>
-              <a href="../../db/dbtransaksi.php?proses=hapus&id_transaksi=<?= $data['id_transaksi'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
-            </td>
-          </tr>
-        <?php } ?>
-      </tbody>
-    </table>
-  </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Penerima</th>
+                    <th>Nama Bantuan</th>
+                    <th>Nominal</th>
+                    <th>Admin</th>
+                    <th>Tanggal Pembayaran</th>
+                    <th>Foto Bukti</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $no = 1;
+                while ($row = mysqli_fetch_assoc($query)) :
+
+                    // --- PERBAIKAN WARNING DAN PATH FOTO DIMULAI DI SINI ---
+
+                    // 1. Mengatasi Warning 'Undefined Array Key "foto"'
+                    // Jika kunci 'foto' tidak ada, gunakan string kosong ('')
+                    $namaFoto = $row['foto'] ?? '';
+
+                    // 2. PATH SERVER (Untuk file_exists()): Digunakan untuk pengecekan keberadaan file fisik di server.
+                    // __DIR__ adalah lokasi fisik folder dari file PHP yang sedang berjalan.
+                    $serverPath = __DIR__ . "/fototransaksi/" . $namaFoto;
+
+                    // 3. PATH URL (Untuk <img> src): Digunakan oleh browser untuk menampilkan gambar.
+                    // Asumsi folder 'views' berada di root direktori proyek.
+                    $urlPath = "/views/transaksi/fototransaksi/" . $namaFoto;
+
+                    // --- PERBAIKAN SELESAI ---
+                ?>
+                    <tr>
+                        <td><?= $no++; ?></td>
+                        <td><?= htmlspecialchars($row['nama_penerima']); ?></td>
+                        <td><?= htmlspecialchars($row['nama_bantuan']); ?></td>
+                        <td><?= number_format($row['nominal'], 0, ",", "."); ?></td>
+                        <td><?= htmlspecialchars($row['nama_admin']); ?></td>
+                        <td><?= htmlspecialchars($row['tanggal_pembayaran']); ?></td>
+                        <td>
+                            <?php
+                            // Pengecekan ganda: Pastikan nama file ada DAN file fisik benar-benar ada di server.
+                            if (!empty($namaFoto) && file_exists($serverPath)) :
+                            ?>
+                                <img src="<?= htmlspecialchars($urlPath); ?>" alt="bukti" style="width:60px; height:auto; object-fit:cover;">
+                            <?php else : ?>
+                                <span class="text-muted">(Belum ada)</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <a href="index.php?halaman=edittransaksi&id_transaksi=<?= $row['id_transaksi']; ?>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="db/dbtransaksi.php?proses=hapus&id_transaksi=<?= $row['id_transaksi']; ?>"
+                                onclick="return confirm('Yakin ingin hapus data ini?');"
+                                class="btn btn-danger btn-sm">Hapus</a>
+                            <a href="index.php?halaman=detailtransaksi&id_transaksi=<?= $row['id_transaksi']; ?>" class="btn btn-info btn-sm">Lihat Detail</a>
+                            <a href="views/transaksi/cetakstruk.php?id_transaksi=<?= $row['id_transaksi']; ?>" target="_blank" class="btn btn-info btn-sm">Cetak</a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
 </div>

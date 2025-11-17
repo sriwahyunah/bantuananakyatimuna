@@ -1,152 +1,105 @@
 <?php
-// ============================================================
-// FILE: db/dbpenerima.php
-// Fungsi: Mengelola proses tambah, edit, hapus data penerima
-// ============================================================
-
 include "../koneksi.php";
-session_start();
 
-// ------------------------------------------------------------
-// CEK KONEKSI
-// ------------------------------------------------------------
-if (mysqli_connect_errno()) {
-    echo "Gagal terhubung ke MySQL: " . mysqli_connect_error();
-    exit();
-}
+$proses = $_GET['proses'];
 
-// ------------------------------------------------------------
-// TENTUKAN PROSES (tambah, edit, hapus)
-// ------------------------------------------------------------
-$proses = isset($_GET['proses']) ? $_GET['proses'] : '';
-
-
-// ====================================================================
-// 🟢 PROSES TAMBAH DATA
-// ====================================================================
+// ===================== TAMBAH =====================
 if ($proses == 'tambah') {
 
-    // Sanitasi input
-    $nisp        = mysqli_real_escape_string($koneksi, $_POST['nisp']);
-    $nama        = mysqli_real_escape_string($koneksi, $_POST['nama_penerima']);
-    $status      = mysqli_real_escape_string($koneksi, $_POST['status']);
-    $kelas       = mysqli_real_escape_string($koneksi, $_POST['kelas']);
-    $tanggal     = mysqli_real_escape_string($koneksi, $_POST['tanggal_lahir']);
-    $alamat      = mysqli_real_escape_string($koneksi, $_POST['alamat']);
-    $pendapatan  = mysqli_real_escape_string($koneksi, $_POST['pendapatanorangtua']);
-    $foto        = '';
+  $nisp = htmlspecialchars($_POST['nisp']);
+  $nama_penerima = htmlspecialchars($_POST['nama_penerima']);
+  $kelas = htmlspecialchars($_POST['kelas']);
+  $tanggal_lahir = $_POST['tanggal_lahir'];
+  $alamat = htmlspecialchars($_POST['alamat']);
+  $status = htmlspecialchars($_POST['status']);
+  $pendapatan = intval($_POST['pendapatan_orang_tua']);
 
-    // Upload foto jika ada
-    if (!empty($_FILES['foto']['name'])) {
-        $folder = "../uploads/";
-        if (!file_exists($folder)) mkdir($folder, 0777, true);
-        $foto = time() . "_" . basename($_FILES['foto']['name']);
-        move_uploaded_file($_FILES['foto']['tmp_name'], $folder . $foto);
+  // === Upload Foto ===
+  $foto = "";
+  if (!empty($_FILES['foto']['name'])) {
+    $folder = "../views/penerima/fotopenerima/"; // 🔹 Folder penyimpanan baru
+    if (!file_exists($folder)) {
+      mkdir($folder, 0777, true);
     }
 
-    // Simpan ke database
-    $query = "INSERT INTO penerima (nisp, nama_penerima, status, kelas, tanggal_lahir, alamat, pendapatanorangtua, foto)
-              VALUES ('$nisp', '$nama', '$status', '$kelas', '$tanggal', '$alamat', '$pendapatan', '$foto')";
+    $namaFile = time() . "_" . basename($_FILES['foto']['name']);
+    $target = $folder . $namaFile;
 
-    if (mysqli_query($koneksi, $query)) {
-        header("Location: ../views/penerima/penerima.php?pesan=berhasil_tambah");
-        exit();
-    } else {
-        echo "Gagal menambah data: " . mysqli_error($koneksi);
-        exit();
+    if (move_uploaded_file($_FILES['foto']['tmp_name'], $target)) {
+      $foto = $namaFile;
     }
+  }
+
+  $sql = "INSERT INTO penerima (nisp, nama_penerima, kelas, tanggal_lahir, alamat, status, pendapatan_orang_tua, foto)
+          VALUES ('$nisp', '$nama_penerima', '$kelas', '$tanggal_lahir', '$alamat', '$status', '$pendapatan', '$foto')";
+  mysqli_query($koneksi, $sql);
+
+  header("location:../index.php?halaman=penerima&pesan=berhasil_tambah");
 }
 
-
-
-// ====================================================================
-// ✏️ PROSES EDIT / UPDATE DATA
-// ====================================================================
+// ===================== EDIT =====================
 elseif ($proses == 'edit') {
 
-    $id          = mysqli_real_escape_string($koneksi, $_POST['id_penerima']);
-    $nisp        = mysqli_real_escape_string($koneksi, $_POST['nisp']);
-    $nama        = mysqli_real_escape_string($koneksi, $_POST['nama_penerima']);
-    $status      = mysqli_real_escape_string($koneksi, $_POST['status']);
-    $kelas       = mysqli_real_escape_string($koneksi, $_POST['kelas']);
-    $tanggal     = mysqli_real_escape_string($koneksi, $_POST['tanggal_lahir']);
-    $alamat      = mysqli_real_escape_string($koneksi, $_POST['alamat']);
-    $pendapatan  = mysqli_real_escape_string($koneksi, $_POST['pendapatanorangtua']);
+  $id_penerima = intval($_POST['id_penerima']);
+  $nisp = htmlspecialchars($_POST['nisp']);
+  $nama_penerima = htmlspecialchars($_POST['nama_penerima']);
+  $kelas = htmlspecialchars($_POST['kelas']);
+  $tanggal_lahir = $_POST['tanggal_lahir'];
+  $alamat = htmlspecialchars($_POST['alamat']);
+  $status = htmlspecialchars($_POST['status']);
+  $pendapatan = intval($_POST['pendapatan_orang_tua']);
 
-    // Ambil foto lama
-    $cek = mysqli_query($koneksi, "SELECT foto FROM penerima WHERE id_penerima='$id'");
-    $data = mysqli_fetch_assoc($cek);
+  $cek = mysqli_query($koneksi, "SELECT foto FROM penerima WHERE id_penerima='$id_penerima'");
+  $dataLama = mysqli_fetch_assoc($cek);
+  $fotoLama = $dataLama['foto'];
 
-
-    // Proses upload foto baru
-    if (!empty($_FILES['foto']['name'])) {
-        $folder = "../uploads/";
-        if (!file_exists($folder)) mkdir($folder, 0777, true);
-
-        // Hapus foto lama jika ada
-        if (!empty($foto_lama) && file_exists($folder . $foto_lama)) {
-            unlink($folder . $foto_lama);
-        }
-
-        $foto_baru = time() . "_" . basename($_FILES['foto']['name']);
-        move_uploaded_file($_FILES['foto']['tmp_name'], $folder . $foto_baru);
-        $foto = $foto_baru;
-    } else {
-        $foto = $foto_lama;
+  $foto = $fotoLama;
+  if (!empty($_FILES['foto']['name'])) {
+    $folder = "../views/penerima/fotopenerima/"; // 🔹 folder baru
+    if (!file_exists($folder)) {
+      mkdir($folder, 0777, true);
     }
 
-    // Query update
-    $query = "UPDATE penerima SET 
-                nisp='$nisp',
-                nama_penerima='$nama',
-                status='$status',
-                kelas='$kelas',
-                tanggal_lahir='$tanggal',
-                alamat='$alamat',
-                pendapatanorangtua='$pendapatan',
-                foto='$foto'
-              WHERE id_penerima='$id'";
+    $namaFile = time() . "_" . basename($_FILES['foto']['name']);
+    $target = $folder . $namaFile;
 
-    if (mysqli_query($koneksi, $query)) {
-        header("Location: ../views/penerima/penerima.php?pesan=berhasiledit");
-        exit();
-    } else {
-        echo "Gagal memperbarui data: " . mysqli_error($koneksi);
-        exit();
+    if (move_uploaded_file($_FILES['foto']['tmp_name'], $target)) {
+      // Hapus foto lama jika ada
+      if (!empty($fotoLama) && file_exists($folder . $fotoLama)) {
+        unlink($folder . $fotoLama);
+      }
+      $foto = $namaFile;
     }
+  }
+
+  $sql = "UPDATE penerima SET 
+            nisp='$nisp',
+            nama_penerima='$nama_penerima',
+            kelas='$kelas',
+            tanggal_lahir='$tanggal_lahir',
+            alamat='$alamat',
+            status='$status',
+            pendapatan_orang_tua='$pendapatan',
+            foto='$foto'
+          WHERE id_penerima='$id_penerima'";
+
+  mysqli_query($koneksi, $sql);
+  header("location:../index.php?halaman=penerima&pesan=berhasil_edit");
 }
 
-
-
-// ====================================================================
-// 🔴 PROSES HAPUS DATA
+// ===================== HAPUS =====================
 elseif ($proses == 'hapus') {
-    $id = $_GET['id_penerima'];
+  $id_penerima = intval($_GET['id_penerima']);
 
-    // Ambil foto lama
-    $data = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT foto FROM penerima WHERE id_penerima='$id'"));
-    if (!empty($data['foto']) && file_exists("../uploads/" . $data['foto'])) {
-        unlink("../uploads/" . $data['foto']);
-    }
+  $folder = "../views/penerima/fotopenerima/";
+  $cek = mysqli_query($koneksi, "SELECT foto FROM penerima WHERE id_penerima='$id_penerima'");
+  $data = mysqli_fetch_assoc($cek);
 
-    // Hapus data
-    $hapus = mysqli_query($koneksi, "DELETE FROM penerima WHERE id_penerima='$id'");
+  if (!empty($data['foto']) && file_exists($folder . $data['foto'])) {
+    unlink($folder . $data['foto']);
+  }
 
-    if ($hapus) {
-        header("Location: ../index.php?halaman=penerima&pesan=berhasil_hapus");
-        exit();
-    } else {
-        echo "Gagal menghapus data: " . mysqli_error($koneksi);
-        exit();
-    }
+  mysqli_query($koneksi, "DELETE FROM penerima WHERE id_penerima='$id_penerima'");
+  header("location:../index.php?halaman=penerima&pesan=berhasil_hapus");
 }
-
-
-
-// ====================================================================
-// 🚫 TIDAK ADA PROSES
-// ====================================================================
-else {
-    echo "<div style='color:red; font-weight:bold;'>❌ Proses tidak dikenal.</div>";
-    exit();
-}
+?>
