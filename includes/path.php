@@ -16,7 +16,7 @@ define('UPLOADS_PATH', BASE_PATH . 'uploads' . DIRECTORY_SEPARATOR);
 
 // BASE_URL — hanya didefinisikan jika belum ada
 if (!defined('BASE_URL')) {
-    define('BASE_URL', 'http://localhost/sriwahyunah/11pertemuan29/bantuananakyatimuna2/');
+    define('BASE_URL', 'http://localhost/bantuananakyatimuna2/');
 }
 
 // Upload folder spesifik peminjaman

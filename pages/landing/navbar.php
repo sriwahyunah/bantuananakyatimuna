@@ -59,19 +59,20 @@ $hal = isset($_GET['hal']) ? $_GET['hal'] : 'home';
             <ul class="navbar-nav ml-auto">
 
                 <!-- LOGIN PENERIMA -->
+                <!-- LOGIN penerima -->
                 <li class="nav-item mr-2">
-                    <a href="<?= BASE_URL ?>?hal=loginpenerima"
-                        class="btn btn-primary btn-sm <?= ($hal == 'loginpenerima') ? 'active' : '' ?>">
-                        <i class="fas fa-hand-holding-heart"></i> Login Penerima
+                    <a href="<?= BASE_URL ?>?hal=loginpenerima" class="btn btn-primary btn-sm <?= ($hal == 'loginpenerima') ? 'active' : '' ?>">
+                        <i class="fas fa-user"></i> Login penerima
                     </a>
                 </li>
 
-                <!-- LOGIN ADMIN -->
+                <!-- LOGIN USER -->
                 <li class="nav-item">
                     <a href="<?= BASE_URL ?>?hal=loginuser"
                         class="btn btn-danger btn-sm <?= ($hal == 'loginuser') ? 'active' : '' ?>">
-                        <i class="fas fa-user-shield"></i> Login Admin
+                        <i class="fas fa-user-shield"></i> Login User
                     </a>
+                </li>
                 </li>
 
             </ul>
