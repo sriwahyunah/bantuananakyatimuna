@@ -1,85 +1,169 @@
 <?php
+// =======================================================
+// File: index.php (root)
+// Routing utama Aplikasi Bantuan Anak Yatim UNA2
+// =======================================================
+
+// Debug (matikan saat production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-session_start();
 
-// --- Load config, koneksi, path ---
+// Load path, config, koneksi
 require_once __DIR__ . '/includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 require_once INCLUDES_PATH . 'koneksi.php';
 
-// --- Ambil parameter ?hal
-$hal = strtolower(trim($_GET['hal'] ?? 'home'));
-$hal = basename(str_replace('.php', '', $hal));
+// Mulai session
+session_start();
 
-// --- Helper: pilih file view dari beberapa kandidat ---
-function pick_view(array $paths)
-{
-    foreach ($paths as $p) {
-        if (file_exists($p)) return $p;
-    }
-    return false;
-}
+// =======================================================
+// Ambil parameter ?hal=
+// =======================================================
+$hal = isset($_GET['hal']) ? trim($_GET['hal']) : 'home';
 
-// --- ROUTES BERSIH ---
-$routes = [
+// Sanitasi
+$hal = strtolower(basename(str_replace('.php', '', $hal)));
 
-    // LANDING PAGES
-    'home'           => [VIEWS_PATH . 'landing/home.php'],
-    'tentang'        => [VIEWS_PATH . 'landing/tentang.php'],
-    'kontak'         => [VIEWS_PATH . 'landing/kontak.php'],
-    'bantuan'        => [VIEWS_PATH . 'landing/bantuan.php'],
-    'penerima'       => [VIEWS_PATH . 'landing/penerima.php'],
-    'detailbantuan'  => [VIEWS_PATH . 'landing/detailbantuan.php'],
-    'detailpenerima' => [VIEWS_PATH . 'landing/detailpenerima.php'],
 
-    // OTENTIKASI USER (admin/petugas)
-    'loginuser'       => [VIEWS_PATH . 'otentikasiuser/login.php'],
-    'prosesloginuser' => [VIEWS_PATH . 'otentikasiuser/proseslogin.php'],
-    'logoutuser'      => [VIEWS_PATH . 'otentikasiuser/logout.php'],
+// =======================================================
+//                    ROUTING SYSTEM
+//   (SAMA PERSIS DENGAN PEMINJAMNALATRPL, 
+//    NAMUN DISINKRONKAN DENGAN FITUR APK INI)
+// =======================================================
 
+switch ($hal) {
+
+    // ---------------------------------------------------
+    // HALAMAN LANDING
+    // ---------------------------------------------------
+    case '':
+    case 'home':
+        $file_view = VIEWS_PATH . 'landing/home.php';
+        break;
+
+    case 'tentang':
+        $file_view = VIEWS_PATH . 'landing/tentang.php';
+        break;
+
+    case 'kontak':
+        $file_view = VIEWS_PATH . 'landing/kontak.php';
+        break;
+
+    case 'kategori':
+        $file_view = VIEWS_PATH . 'landing/kategori.php';
+        break;
+
+    case 'detilbantuan':
+        $file_view = VIEWS_PATH . 'landing/detilbantuan.php';
+        break;
+
+    case 'proseskomentar':
+        $file_view = VIEWS_PATH . 'landing/proseskomentar.php';
+        break;
+
+
+    // ---------------------------------------------------
+    // OTENTIKASI ADMIN/PETUGAS
+    // ---------------------------------------------------
+    case 'loginuser':
+        $file_view = VIEWS_PATH . 'otentikasiuser/loginuser.php';
+        break;
+
+    case 'prosesloginuser':
+        $file_view = VIEWS_PATH . 'otentikasiuser/prosesloginuser.php';
+        break;
+
+    case 'logoutuser':
+        $file_view = VIEWS_PATH . 'otentikasiuser/logoutuser.php';
+        break;
+
+    case 'registeruser':
+        $file_view = VIEWS_PATH . 'otentikasiuser/registeruser.php';
+        break;
+
+
+    // ---------------------------------------------------
     // OTENTIKASI PENERIMA
-    'loginpenerima'       => [VIEWS_PATH . 'otentikasipenerima/loginpenerima.php'],
-    'prosesloginpenerima' => [VIEWS_PATH . 'otentikasipenerima/prosesloginpenerima.php'],
-    'registerpenerima'    => [VIEWS_PATH . 'otentikasipenerima/registerpenerima.php'],
-    'logoutpenerima'      => [VIEWS_PATH . 'otentikasipenerima/logoutpenerima.php'],
+    // ---------------------------------------------------
+    case 'loginpenerima':
+        $file_view = VIEWS_PATH . 'otentikasipenerima/loginpenerima.php';
+        break;
 
+    case 'prosesloginpenerima':
+        $file_view = VIEWS_PATH . 'otentikasipenerima/prosesloginpenerima.php';
+        break;
+
+    case 'registerpenerima':
+        $file_view = VIEWS_PATH . 'otentikasipenerima/registerpenerima.php';
+        break;
+
+    case 'prosesregisterpenerima':
+        $file_view = VIEWS_PATH . 'otentikasipenerima/prosesregisterpenerima.php';
+        break;
+
+    case 'logoutpenerima':
+        $file_view = VIEWS_PATH . 'otentikasipenerima/logoutpenerima.php';
+        break;
+
+
+    // ---------------------------------------------------
     // DASHBOARD PENERIMA
-    'dashboardpenerima' => [PAGES_PATH . 'penerima/dashboardpenerima.php'],
-];
+    // ---------------------------------------------------
+    case 'dashboardpenerima':
+    case 'tambahpenerimaan':
+    case 'riwayatpenerimaan':
+    case 'prosespenerimaan':
 
-// pilih file
-$file_view = $routes[$hal] ?? false;
-$file_view = pick_view($file_view ?: []);
+        // wajib login
+        if (!isset($_SESSION['id_penerima'])) {
+            header("Location: ?hal=loginpenerima");
+            exit;
+        }
 
-// daftar halaman yang perlu login penerima
-$halaman_penerima = ['dashboardpenerima'];
+        // routing file dashboard penerima
+        $file_view = VIEWS_PATH . 'penerima/' . $hal . '.php';
 
-// ========== TEMPLATE: DASHBOARD PENERIMA ==========
-if (in_array($hal, $halaman_penerima, true)) {
+        // template khusus penerima
+        include PAGES_PATH . 'penerima/header.php';
+        include PAGES_PATH . 'penerima/navbar.php';
 
-    if (!isset($_SESSION['id_penerima'])) {
-        header("Location: ?hal=loginpenerima");
+        if (file_exists($file_view)) {
+            include $file_view;
+        } else {
+            include VIEWS_PATH . 'landing/404.php';
+        }
+
+        include PAGES_PATH . 'penerima/footer.php';
         exit;
-    }
 
-    include PAGES_PATH . "penerima/header.php";
-    include PAGES_PATH . "penerima/navbar.php";
 
-    include ($file_view ?: VIEWS_PATH . "landing/404.php");
-
-    include PAGES_PATH . "penerima/footer.php";
-    exit;
+    // ---------------------------------------------------
+    // JIKA TIDAK ADA HALAMAN
+    // ---------------------------------------------------
+    default:
+        $file_view = VIEWS_PATH . 'landing/404.php';
+        break;
 }
 
-// ========== TEMPLATE: LANDING ==========
-include PAGES_PATH . "landing/header.php";
-include PAGES_PATH . "landing/navbar.php";
 
-if ($hal === "home" && file_exists(PAGES_PATH . "landing/hero.php")) {
-    include PAGES_PATH . "landing/hero.php";
+// =======================================================
+//   TEMPLATE LANDING (header → navbar → konten → footer)
+// =======================================================
+
+include PAGES_PATH . 'landing/header.php';
+include PAGES_PATH . 'landing/navbar.php';
+
+// Hero khusus di home
+if ($hal === 'home') {
+    include PAGES_PATH . 'landing/hero.php';
 }
 
-include ($file_view ?: VIEWS_PATH . "landing/404.php");
+// Konten
+if (file_exists($file_view)) {
+    include $file_view;
+} else {
+    include VIEWS_PATH . 'landing/404.php';
+}
 
-include PAGES_PATH . "landing/footer.php";
+include PAGES_PATH . 'landing/footer.php';
+
