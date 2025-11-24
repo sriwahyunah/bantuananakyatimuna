@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-<<<<<<< HEAD
+
 // File: views/otentikasiuser/loginuser.php (modernized)
 // Login aplikasi bantuananakyatimuna2
 // ============================================================
@@ -8,7 +8,7 @@
 require_once __DIR__ . '/../../includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 
-=======
+
 // File: views/otentikasipenerima/loginpenerima.php
 // Login aplikasi bantuananakyatimuna2 untuk role penerima
 // ============================================================
@@ -18,12 +18,12 @@ require_once __DIR__ . '/../../includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 
 // Mulai session
->>>>>>> 28924cc2c2fede24d1e338ee57a7af3c314455d0
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-<<<<<<< HEAD
+
 if (isset($_SESSION['role'])) {
     if ($_SESSION['role'] === 'admin') {
         header("Location: " . BASE_URL . "?hal=dashboardadmin");

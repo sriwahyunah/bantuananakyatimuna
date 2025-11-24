@@ -1,5 +1,5 @@
 <?php
-<<<<<<< HEAD
+
 // =============================================
 // prosesloginuser.php - Versi Lengkap & Aman
 // =============================================
@@ -42,48 +42,48 @@ $result = $stmt->get_result();
 // ---------------------------------------------
 // Jika user ditemukan
 // ---------------------------------------------
-if ($result && $result->num_rows === 1) {
+if ($result && $result->num_rows === 1)
     $user = $result->fetch_assoc();
 
-    // Periksa apakah akun aktif
-    if ($user['status'] !== 'aktif') {
-        header('Location: ' . BASE_URL . '?hal=loginuser&pesan=' . urlencode('Akun tidak aktif'));
-        exit;
-    }
+// Periksa apakah akun aktif
+if ($user['status'] !== 'aktif') {
+    header('Location: ' . BASE_URL . '?hal=loginuser&pesan=' . urlencode('Akun tidak aktif'));
+    exit;
+}
 
-    // -----------------------------------------
-    // Validasi password
-    // -----------------------------------------
-    if (password_verify($password, $user['password'])) {
+// -----------------------------------------
+// Validasi password
+// -----------------------------------------
+if (password_verify($password, $user['password']))
 
-        // Set session
-        $_SESSION['login']      = true;
-        $_SESSION['id_user']    = $user['id_user'];
-        $_SESSION['nama_user']  = $user['nama_user'];
-        $_SESSION['username']   = $user['username'];
-        $_SESSION['role']       = $user['role'];
-        $_SESSION['foto']       = $user['foto'] ?? '';
+    // Set session
+    $_SESSION['login']      = true;
+$_SESSION['id_user']    = $user['id_user'];
+$_SESSION['nama_user']  = $user['nama_user'];
+$_SESSION['username']   = $user['username'];
+$_SESSION['role']       = $user['role'];
+$_SESSION['foto']       = $user['foto'] ?? '';
 
-        // -----------------------------------------
-        // Redirect berdasarkan role
-        // -----------------------------------------
-        switch ($user['role']) {
-            case 'admin':
-                $redirect = BASE_URL . '?hal=dashboardadmin';
-                break;
-            case 'petugas':
-                $redirect = BASE_URL . '?hal=dashboardpetugas';
-                break;
-            case 'penerima':
-                $redirect = BASE_URL . '?hal=dashboardpenerima';
-                break;
-            default:
-                $redirect = BASE_URL;
-                break;
-        }
+// -----------------------------------------
+// Redirect berdasarkan role
+// -----------------------------------------
+switch ($user['role']) {
+    case 'admin':
+        $redirect = BASE_URL . '?hal=dashboardadmin';
+        break;
+    case 'petugas':
+        $redirect = BASE_URL . '?hal=dashboardpetugas';
+        break;
+    case 'penerima':
+        $redirect = BASE_URL . '?hal=dashboardpenerima';
+        break;
+    default:
+        $redirect = BASE_URL;
+        break;
+}
 
-        header("Location: $redirect");
-=======
+header("Location: $redirect");
+
 // ==============================================
 // File: views/otentikasiuser/prosesloginuser.php
 // Proses backend login admin / petugas / editor
@@ -149,18 +149,18 @@ if ($result->num_rows === 1) {
         }
 
         header("Location: " . BASE_URL . "dashboard.php?hal={$hal}");
->>>>>>> 28924cc2c2fede24d1e338ee57a7af3c314455d0
+
         exit;
     }
 }
 
-<<<<<<< HEAD
+
 // ---------------------------------------------
 // Jika username atau password salah
 // ---------------------------------------------
 header('Location: ' . BASE_URL . '?hal=loginuser&pesan=' . urlencode('Username atau password salah'));
-=======
+
 // Jika gagal login
 header("Location: " . BASE_URL . "views/otentikasiuser/login.php?pesan=" . urlencode("Username atau password salah"));
->>>>>>> 28924cc2c2fede24d1e338ee57a7af3c314455d0
+
 exit;

@@ -1,12 +1,11 @@
 <?php
 // =======================================================
 // File: index.php (root)
-<<<<<<< HEAD
 // Deskripsi: Routing utama tampilan publik peminjamanalatrpl
 // =======================================================
 
 // Load config, koneksi, path
-=======
+
 // Routing utama Aplikasi Bantuan Anak Yatim UNA2
 // =======================================================
 
@@ -15,7 +14,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Load path, config, koneksi
->>>>>>> 28924cc2c2fede24d1e338ee57a7af3c314455d0
+
 require_once __DIR__ . '/includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 require_once INCLUDES_PATH . 'koneksi.php';
@@ -24,7 +23,7 @@ require_once INCLUDES_PATH . 'koneksi.php';
 session_start();
 
 // =======================================================
-<<<<<<< HEAD
+
 // AUTO REDIRECT JIKA SUDAH LOGIN (FIX LOGOUT)
 // =======================================================
 // Perbaikan:
@@ -125,7 +124,7 @@ switch ($halaman) {
         $file_view = VIEWS_PATH . 'landing/proseskomentar.php';
         break;
 
-=======
+
 // Ambil parameter ?hal=
 // =======================================================
 $hal = isset($_GET['hal']) ? trim($_GET['hal']) : 'home';
@@ -249,7 +248,7 @@ switch ($hal) {
     // ---------------------------------------------------
     // JIKA TIDAK ADA HALAMAN
     // ---------------------------------------------------
->>>>>>> 28924cc2c2fede24d1e338ee57a7af3c314455d0
+
     default:
         $file_view = VIEWS_PATH . 'landing/404.php';
         break;
@@ -257,7 +256,7 @@ switch ($hal) {
 
 
 // =======================================================
-<<<<<<< HEAD
+
 //        TEMPLATE LANDING (header → navbar → content)
 // =======================================================
 include PAGES_PATH . 'landing/header.php';
@@ -269,7 +268,7 @@ if ($halaman === 'home') {
 }
 
 // Muat konten
-=======
+
 //   TEMPLATE LANDING (header → navbar → konten → footer)
 // =======================================================
 
@@ -282,17 +281,16 @@ if ($hal === 'home') {
 }
 
 // Konten
->>>>>>> 28924cc2c2fede24d1e338ee57a7af3c314455d0
+
 if (file_exists($file_view)) {
     include $file_view;
 } else {
     include VIEWS_PATH . 'landing/404.php';
 }
-<<<<<<< HEAD
 
-include PAGES_PATH . 'landing/footer.php';
-=======
 
 include PAGES_PATH . 'landing/footer.php';
 
->>>>>>> 28924cc2c2fede24d1e338ee57a7af3c314455d0
+
+include PAGES_PATH . 'landing/footer.php';
+}
