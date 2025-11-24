@@ -1,50 +1,43 @@
 <?php
 // ============================================================
-// File: views/otentikasiuser/login.php
-// Login aplikasi bantuananakyatimuna2
+// File: views/otentikasipenerima/loginpenerima.php
+// Login aplikasi bantuananakyatimuna2 untuk role penerima
 // ============================================================
 
-// Include path & konfigurasi
+// Include path dan konfigurasi
 require_once __DIR__ . '/../../includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 
-// Pastikan sesi aktif
+// Mulai session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Jika user sudah login, redirect sesuai role
-if (isset($_SESSION['role'])) {
-    if ($_SESSION['role'] === 'admin') {
-        header("Location: " . BASE_URL . "?hal=dashboardadmin");
-        exit();
-    } elseif ($_SESSION['role'] === 'petugas') {
-        header("Location: " . BASE_URL . "?hal=dashboardpetugas");
-        exit();
-    } elseif ($_SESSION['role'] === 'penerima') {
-        header("Location: " . BASE_URL . "?hal=dashboardpenerima");
-        exit();
-    }
+// Jika sudah login, arahkan ke dashboard
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'penerima') {
+    header("Location: " . BASE_URL . "?hal=dashboardpenerima");
+    exit();
 }
 
-// Ambil pesan error dari redirect prosesloginuser.php
+// Ambil pesan error jika ada
 $error = $_GET['pesan'] ?? '';
 ?>
 
 <style>
-.login-wrapper {
+  .login-wrapper {
     min-height: calc(100vh - 100px);
     display: flex;
     justify-content: center;
     align-items: center;
-}
-.toggle-password {
+  }
+
+  .toggle-password {
     position: absolute;
     right: 15px;
     top: 38px;
     cursor: pointer;
     color: #777;
-}
+  }
 </style>
 
 <div class="login-wrapper">
@@ -52,16 +45,21 @@ $error = $_GET['pesan'] ?? '';
     <div class="row justify-content-center">
       <div class="col-md-5">
         <div class="card shadow-lg border-0">
+
+          <!-- HEADER -->
+          <div class="card-header bg-primary text-center py-3">
+            <h3 class="m-0 fw-bold">Login Penerima Bantuan</h3>
+          </div>
+
           <div class="card-body p-4">
-            <h3 class="text-center mb-4">Login User (Admin/Petugas)</h3>
 
             <?php if (!empty($error)): ?>
               <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="?hal=prosesloginuser">
+            <form method="POST" action="?hal=prosesloginpenerima">
               <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
+                <label for="username" class="form-label">Username / NIS</label>
                 <input type="text" name="username" id="username" class="form-control" required>
               </div>
 
@@ -71,15 +69,21 @@ $error = $_GET['pesan'] ?? '';
                 <span class="toggle-password" onclick="togglePassword()">👁️</span>
               </div>
 
-              <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Login</button>
+              <div class="d-flex justify-content-between mb-3">
+                <a href="<?= BASE_URL ?>?hal=registerpenerima"
+                  class="btn btn-warning px-4">
+                  <b>Daftar Akun Baru</b>
+                </a>
+                <button type="submit" class="btn btn-primary px-4">Login</button>
               </div>
             </form>
 
-            <div class="text-center mt-3">
+            <div class="text-center mt-1">
               <a href="<?= BASE_URL ?>">← Kembali ke Beranda</a>
             </div>
+
           </div>
+
         </div>
       </div>
     </div>
@@ -87,8 +91,8 @@ $error = $_GET['pesan'] ?? '';
 </div>
 
 <script>
-function togglePassword() {
-  const pass = document.getElementById('password');
-  pass.type = pass.type === 'password' ? 'text' : 'password';
-}
+  function togglePassword() {
+    const pass = document.getElementById('password');
+    pass.type = pass.type === 'password' ? 'text' : 'password';
+  }
 </script>

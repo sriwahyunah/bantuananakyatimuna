@@ -6,7 +6,7 @@
 
 // Base URL (hanya dibuat jika belum didefinisikan di path.php)
 if (!defined('BASE_URL')) {
-    define('BASE_URL', 'http://localhost/bantuananakyatimuna2/');
+    define('BASE_URL', 'http://localhost/bantuananakyatimuna-main/');
 }
 
 $base_url     = BASE_URL;

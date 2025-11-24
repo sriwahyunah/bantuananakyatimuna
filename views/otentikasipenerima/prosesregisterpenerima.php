@@ -21,13 +21,13 @@ $nama        = bersihkan($_POST['nama_penerima'] ?? '');
 $kelas       = bersihkan($_POST['kelas'] ?? '');
 $tgl_lahir   = bersihkan($_POST['tanggal_lahir'] ?? '');
 $alamat      = bersihkan($_POST['alamat'] ?? '');
-$pendapatan  = (int) ($_POST['pendapatan_orang_tua'] ?? 0);
+$pendapatan  = $_POST['pendapatan_orang_tua'] ?? null;
 $status      = $_POST['status'] ?? 'pending';
 
 // ==============================
 // Validasi tidak boleh kosong
 // ==============================
-if (!$nisp || !$nama || !$kelas || !$tgl_lahir || !$alamat || !$pendapatan) {
+if (!$nisp || !$nama || !$kelas || !$tgl_lahir || !$alamat || $pendapatan === null) {
     header("Location: " . BASE_URL . "?hal=registerpenerima&pesan=" . urlencode("Isi semua kolom"));
     exit;
 }
@@ -35,7 +35,7 @@ if (!$nisp || !$nama || !$kelas || !$tgl_lahir || !$alamat || !$pendapatan) {
 // ==============================
 // Cek NISP sudah terpakai?
 // ==============================
-$stmt = $koneksi->prepare("SELECT * FROM penerima WHERE nisp = ? LIMIT 1");
+$stmt = $koneksi->prepare("SELECT nisp FROM penerima WHERE nisp = ? LIMIT 1");
 $stmt->bind_param("s", $nisp);
 $stmt->execute();
 
@@ -53,7 +53,12 @@ if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
 
     $fotoTmp  = $_FILES['foto']['tmp_name'];
     $fotoName = time() . "_" . basename($_FILES['foto']['name']);
-    $target   = $ROOT . 'uploads/penerima/' . $fotoName;
+
+    // pastikan folder ada
+    $dirUpload = $ROOT . 'uploads/penerima/';
+    if (!is_dir($dirUpload)) mkdir($dirUpload, 0755, true);
+
+    $target = $dirUpload . $fotoName;
 
     if (move_uploaded_file($fotoTmp, $target)) {
         $fotoPath = $fotoName;
@@ -91,3 +96,4 @@ if ($stmt->execute()) {
     header("Location: " . BASE_URL . "?hal=registerpenerima&pesan=" . urlencode("Gagal registrasi, coba lagi"));
     exit;
 }
+?>
